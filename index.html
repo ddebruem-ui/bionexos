@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f0a2a">
+<title>Conexão Orgânica</title>
+<style>
+:root{--bg:#0f0a2a;--bg2:#1c1248;--card:#241a5a;--card2:#2d2270;--lime:#b8f542;--cyan:#35e8e0;--red:#ff5d73;--tx:#f1efff;--mu:#b9b3e0;--ln:rgba(53,232,224,.28);--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--tx);background:radial-gradient(circle at 15% 10%,#2b1a7a 0,transparent 45%),radial-gradient(circle at 90% 90%,#0b3d5e 0,transparent 40%),var(--bg);overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+button{font:inherit;color:inherit;cursor:pointer;border:0;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.screen{display:none;position:fixed;inset:0;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));flex-direction:column;overflow-y:auto}
+.screen.on{display:flex}
+.wrap{width:100%;max-width:1000px;margin:auto}
+/* buttons */
+.btn{background:linear-gradient(135deg,var(--lime),#7ee02f);color:#10200a;font-weight:800;font-size:clamp(18px,4.5vw,24px);letter-spacing:.04em;padding:16px 38px;border-radius:999px;box-shadow:0 0 28px rgba(184,245,66,.4),0 6px 0 #4f8f12;transition:transform .12s,box-shadow .12s;min-height:56px}
+.btn:active{transform:translateY(4px);box-shadow:0 0 20px rgba(184,245,66,.4),0 2px 0 #4f8f12}
+.btn.alt{background:transparent;color:var(--cyan);border:2px solid var(--cyan);box-shadow:none;font-size:clamp(15px,4vw,19px)}
+.btn.alt:active{background:rgba(53,232,224,.15);transform:none}
+.ib{background:var(--card);border:1.5px solid var(--ln);border-radius:12px;min-width:48px;min-height:48px;font-size:20px;padding:0 12px}
+.ib:active{background:var(--card2)}
+/* menu, intro & results */
+.center{text-align:center}
+.logo{font-size:56px;filter:drop-shadow(0 0 16px var(--cyan))}
+h1{margin:6px 0 4px;font-size:clamp(34px,9vw,72px);line-height:1;letter-spacing:.02em;font-weight:900;background:linear-gradient(90deg,var(--lime),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mu);font-size:clamp(16px,4vw,22px);margin:0 0 20px}
+.panel{background:rgba(36,26,90,.7);border:1.5px solid var(--ln);border-radius:20px;padding:16px 20px;margin:0 auto 20px;max-width:560px;text-align:left;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.panel ul{margin:0;padding-left:20px;line-height:1.55;font-size:clamp(14px,3.6vw,17px)}
+.panel b{color:var(--lime)}
+.rec{font-size:clamp(15px,4vw,19px);margin-bottom:20px;color:var(--mu)}
+.rec strong{color:var(--lime);font-size:1.3em}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px;margin:0 auto 22px}
+.st{background:var(--card);border:1.5px solid var(--ln);border-radius:16px;padding:12px}
+.st span{display:block;color:var(--mu);font-size:14px}
+.st strong{font-size:clamp(24px,6vw,34px);color:var(--cyan)}
+.st.big{grid-column:1/-1}.st.big strong{color:var(--lime);font-size:clamp(40px,11vw,64px)}
+.newrec{color:var(--lime);font-weight:800;margin:-10px 0 16px;min-height:1.2em}
+.pips{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+.pips i{width:18px;height:6px;border-radius:4px;background:rgba(255,255,255,.18)}
+.pips i.on{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}.pips i.ok{background:var(--lime)}
+.pips.big{margin-bottom:14px}.pips.big i{width:40px;height:8px}
+.rank{display:inline-block;font-size:clamp(26px,7vw,40px);font-weight:900;padding:6px 24px;border-radius:999px;border:2px solid var(--rc);color:var(--rc);box-shadow:0 0 26px var(--rc);margin:6px 0 16px;animation:pop .6s}
+.lines{padding:10px 14px}
+.ln{display:grid;grid-template-columns:1.6em 1fr auto;gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ln)}
+.ln:last-child{border-bottom:0}
+.ln b{color:var(--cyan);font-size:1.2em}.ln span{font-weight:700;font-size:clamp(14px,3.8vw,17px)}
+.ln em{font-style:normal;color:var(--lime);font-weight:800}
+.ln small{grid-column:2/-1;color:var(--mu);font-size:13px}
+/* HUD */
+#game{padding-bottom:10px}
+.hud{display:flex;align-items:stretch;gap:8px;width:100%;max-width:1000px;margin:0 auto 8px}
+.hb{background:var(--card);border:1.5px solid var(--ln);border-radius:14px;padding:6px 12px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.hb small{color:var(--mu);font-size:12px}
+.hb strong{font-size:clamp(17px,4.5vw,24px);white-space:nowrap}
+.hb.tm{flex:1.2;position:relative;align-items:center}
+.hb.tm strong{font-size:clamp(34px,10vw,52px);line-height:1;font-variant-numeric:tabular-nums;color:var(--cyan);text-shadow:0 0 18px rgba(53,232,224,.5)}
+.hb.tm.low strong{color:var(--red);text-shadow:0 0 18px rgba(255,93,115,.6);animation:pulse .6s infinite alternate}
+.hb.sc{flex:1}.hb.pg{flex:1}
+.pen{position:absolute;right:8px;top:2px;color:var(--red);font-weight:800;opacity:0;pointer-events:none}
+.pen.go{animation:pen .9s ease-out}
+.hc{display:flex;flex-direction:column;gap:6px;justify-content:center}
+.hc .ib{min-height:44px;min-width:44px;padding:0}
+.bar{height:8px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden;width:100%;max-width:1000px;margin:0 auto 8px}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .12s linear}
+/* strip: stage + combo */
+.strip{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;max-width:1000px;margin:0 auto 8px;font-size:13px;color:var(--mu)}
+.sl{display:flex;align-items:center;gap:8px;white-space:nowrap;font-weight:700}
+.sl .pips{margin:0}
+.combo{display:flex;align-items:center;gap:7px;padding:3px 10px;border-radius:999px;border:1.5px solid var(--ln);background:var(--card);font-weight:800;color:var(--mu);transition:color .2s,border-color .2s,box-shadow .2s}
+.seg{display:flex;gap:2px}.seg i{width:8px;height:12px;border-radius:2px;background:rgba(255,255,255,.15);transition:background .2s}
+.seg i.f{background:linear-gradient(var(--lime),var(--cyan))}
+.combo .cx{min-width:3.4em;text-align:right}
+.combo.hot{color:var(--lime);border-color:var(--lime);box-shadow:0 0 16px rgba(184,245,66,.45)}
+.combo.bump{animation:bump .35s}
+/* board (etapa 1) */
+.board{flex:1;min-height:0;width:100%;max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1.9fr;gap:10px;overflow-y:auto;align-items:stretch}
+.col{display:flex;flex-direction:column;gap:8px}
+.card{position:relative;flex:1 1 auto;min-height:50px;background:linear-gradient(160deg,var(--card2),var(--card));border:2px solid var(--ln);border-radius:var(--r);padding:8px 10px;text-align:left;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.3);transition:transform .15s,border-color .15s,box-shadow .15s,opacity .15s}
+.org{flex:1 1 0;font-weight:700;font-size:clamp(13px,3.6vw,19px)}
+.org .ic{font-size:clamp(20px,5.5vw,28px);flex:none}
+.fn{font-size:clamp(11.5px,3.2vw,16px);line-height:1.28}
+.card:not(.done):not(.off):hover{border-color:var(--cyan)}
+.card.sel{border-color:var(--lime);transform:scale(1.03);box-shadow:0 0 0 2px var(--lime),0 0 24px rgba(184,245,66,.5)}
+.card.bad{border-color:var(--red);box-shadow:0 0 0 2px var(--red),0 0 22px rgba(255,93,115,.55);animation:shake .4s}
+.card.done{cursor:default;border-color:var(--pc);box-shadow:inset 0 0 0 1px var(--pc),0 0 18px var(--pc);opacity:.9;animation:pop .5s}
+.tag{display:none;position:absolute;top:-8px;right:-6px;width:24px;height:24px;border-radius:50%;background:var(--pc);color:#10102a;font-weight:900;font-size:13px;align-items:center;justify-content:center}
+.card.done .tag{display:flex}
+/* quiz (etapas 2 e 3) */
+.quiz{flex:1;min-height:0;width:100%;max-width:1000px;margin:0 auto;display:none;flex-direction:column;gap:10px;overflow-y:auto}
+.qcard{background:linear-gradient(160deg,var(--card2),var(--card));border:2px solid var(--ln);border-radius:20px;padding:14px 16px;box-shadow:0 8px 28px rgba(0,0,0,.35);animation:pop .35s}
+.qn{color:var(--mu);font-size:13px;margin-bottom:6px}
+.qlab{color:var(--cyan);font-size:clamp(14px,3.6vw,17px)}
+.qbig{font-size:clamp(24px,7vw,38px);font-weight:800;margin-top:4px;line-height:1.15}
+.qtxt{font-size:clamp(15px,4.1vw,21px);line-height:1.4}
+.fb{min-height:2.6em;margin-top:8px;font-size:clamp(13px,3.4vw,16px);color:var(--lime);line-height:1.35}
+.opts{display:grid;gap:10px;grid-template-columns:1fr}
+.opt{min-height:58px;font-weight:700;font-size:clamp(15px,4vw,20px);justify-content:flex-start}
+.card.off{opacity:.45;pointer-events:none}
+.fly{position:fixed;z-index:20;font-weight:900;font-size:26px;color:var(--lime);text-shadow:0 0 12px rgba(184,245,66,.8);pointer-events:none;animation:fly .9s ease-out forwards}
+/* pause */
+#ov{position:fixed;inset:0;z-index:30;background:rgba(10,6,34,.94);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:20px;text-align:center}
+#ov.on{display:flex}
+#ov h2{font-size:clamp(30px,8vw,48px);margin:0 0 6px;color:var(--cyan)}
+#ov .btn{min-width:240px}
+@keyframes pulse{to{transform:scale(1.07)}}
+@keyframes bump{40%{transform:scale(1.18)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+@keyframes pop{0%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes pen{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-18px)}}
+@keyframes fly{to{opacity:0;transform:translateY(-60px)}}
+@media (min-width:700px){
+ .board{grid-template-columns:1fr 1.5fr;gap:18px}.col{gap:10px}.card{padding:10px 16px;min-height:56px}
+ .opts.three{grid-template-columns:repeat(3,1fr)}.opts.four{grid-template-columns:1fr 1fr}
+}
+@media (orientation:landscape) and (max-height:520px){
+ .screen{padding-top:8px;padding-bottom:8px}
+ .logo{display:none}.hud{margin-bottom:5px}.hb{padding:3px 10px}.hb.tm strong{font-size:30px}.bar{margin-bottom:5px;height:6px}
+ .strip{margin-bottom:5px}
+ .board{grid-template-columns:1fr 1.7fr;gap:8px}
+ .col{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,minmax(46px,1fr));gap:6px}
+ .card{min-height:0;padding:5px 8px}
+ .org{flex-direction:column;justify-content:center;text-align:center;gap:2px}
+ .org .ic{font-size:20px}
+ .org,.fn{font-size:clamp(11px,2.4vw,15px)}
+ .quiz{flex-direction:row;gap:8px}
+ .qcard{flex:1.15;padding:8px 12px;overflow-y:auto}.qbig{font-size:26px}.qtxt{font-size:15px}
+ .opts{flex:1;grid-auto-rows:minmax(44px,1fr)}.opts.three,.opts.four{grid-template-columns:1fr}
+ .opt{min-height:0;font-size:15px}
+ h1{font-size:40px}.sub{margin-bottom:10px}.panel{margin-bottom:10px;padding:10px 16px}.rec{margin-bottom:10px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<section id="menu" class="screen on"><div class="wrap center">
+  <div class="logo" aria-hidden="true">🧬</div>
+  <h1>CONEXÃO ORGÂNICA</h1>
+  <p class="sub">Conecte as organelas. Domine a célula.</p>
+  <div class="panel"><ul>
+    <li><b>3 etapas</b> progressivas: conexões, identidade celular e desafio da célula.</li>
+    <li>Cada etapa tem <b>tempo limite</b>; cada erro custa segundos e <b>quebra o combo</b>.</li>
+    <li>Acertos seguidos formam um <b>combo</b> que multiplica seus pontos até <b>x2,5</b>.</li>
+    <li>A pontuação das etapas é <b>acumulada</b> e rende uma classificação final.</li>
+  </ul></div>
+  <div class="rec">Recorde pessoal: <strong id="recMenu">0</strong> pts<span id="recRank"></span></div>
+  <button class="btn" id="bPlay">JOGAR</button>
+</div></section>
+
+<!-- INTRO DE ETAPA -->
+<section id="intro" class="screen"><div class="wrap center">
+  <div class="pips big" id="iPips"></div>
+  <div class="logo" id="iIcon" aria-hidden="true">🧬</div>
+  <p class="sub" id="iNum" style="margin-bottom:2px"></p>
+  <h1 id="iTitle" style="font-size:clamp(30px,8vw,56px)"></h1>
+  <p class="sub" id="iDesc"></p>
+  <div class="panel"><ul id="iRules"></ul></div>
+  <div class="row">
+    <button class="btn" id="bStart">COMEÇAR</button>
+    <button class="btn alt" id="bIntroMenu">MENU</button>
+  </div>
+</div></section>
+
+<!-- GAME -->
+<section id="game" class="screen">
+  <div class="hud">
+    <div class="hb tm" id="tmBox"><small>Tempo</small><strong id="tm">01:30</strong><span class="pen" id="pen">-3s</span></div>
+    <div class="hb sc"><small>Pontos</small><strong id="sc">0</strong></div>
+    <div class="hb pg"><small id="pgL">Conexões</small><strong id="pg">0 de 8</strong></div>
+    <div class="hc">
+      <button class="ib" id="bPause" aria-label="Pausar">⏸</button>
+      <button class="ib" id="bRestart" aria-label="Reiniciar etapa" title="Reiniciar etapa">↻</button>
+    </div>
+  </div>
+  <div class="bar"><i id="tbar"></i></div>
+  <div class="strip">
+    <div class="sl"><span id="stTxt">Etapa 1/3</span><div class="pips" id="gPips"></div></div>
+    <div class="combo" id="combo"><span id="cN">🔥 Combo 0</span><span class="seg" id="seg"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="cx" id="cX">x1</span></div>
+  </div>
+  <div class="board" id="board">
+    <div class="col" id="colO" aria-label="Organelas"></div>
+    <div class="col" id="colF" aria-label="Funções"></div>
+  </div>
+  <div class="quiz" id="quiz"></div>
+</section>
+
+<!-- RESULTADO PARCIAL -->
+<section id="stage" class="screen"><div class="wrap center">
+  <div class="logo" id="sIcon" aria-hidden="true">✅</div>
+  <p class="sub" id="sNum" style="margin-bottom:2px"></p>
+  <h1 id="sTitle" style="font-size:clamp(30px,8vw,56px)"></h1>
+  <p class="sub" id="sMsg"></p>
+  <div class="stats">
+    <div class="st big"><span id="sL1">Pontos da etapa</span><strong id="sScore">0</strong></div>
+    <div class="st"><span id="sL2">Acertos de primeira</span><strong id="sClean"></strong></div>
+    <div class="st"><span>Tempo restante</span><strong id="sTime"></strong></div>
+    <div class="st"><span>Maior combo</span><strong id="sCombo"></strong></div>
+    <div class="st"><span>Total acumulado</span><strong id="sTotal"></strong></div>
+  </div>
+  <div class="row">
+    <button class="btn" id="bNext">CONTINUAR</button>
+    <button class="btn" id="bRetry">TENTAR NOVAMENTE</button>
+    <button class="btn alt" id="bSMenu">VOLTAR AO MENU</button>
+  </div>
+</div></section>
+
+<!-- RESULTADO FINAL -->
+<section id="result" class="screen"><div class="wrap center">
+  <div class="logo" aria-hidden="true">🏆</div>
+  <h1 id="rTitle" style="font-size:clamp(30px,8vw,56px)">Célula dominada!</h1>
+  <div class="rank" id="rRank"></div>
+  <div class="stats">
+    <div class="st big"><span>Pontuação total</span><strong id="rScore">0</strong></div>
+    <div class="st"><span>Acertos de primeira</span><strong id="rHits"></strong></div>
+    <div class="st"><span>Maior combo</span><strong id="rCombo"></strong></div>
+  </div>
+  <div class="panel lines" id="rStages"></div>
+  <div class="rec">Recorde pessoal: <strong id="rRec">0</strong></div>
+  <div class="newrec" id="newRec"></div>
+  <div class="row">
+    <button class="btn" id="bAgain">JOGAR NOVAMENTE</button>
+    <button class="btn alt" id="bMenu">VOLTAR AO MENU</button>
+  </div>
+</div></section>
+
+<!-- PAUSA -->
+<div id="ov" role="dialog" aria-modal="true" aria-label="Jogo pausado">
+  <h2>⏸ Pausado</h2>
+  <button class="btn" id="bResume">CONTINUAR</button>
+  <button class="btn alt" id="bRestart2">REINICIAR ETAPA</button>
+  <button class="btn alt" id="bMenu2">MENU</button>
+</div>
+
+<script>
+(function(){
+"use strict";
+var TOTAL=8, KEY="conexaoOrganica.recorde.v2";
+
+/* ---------- dados ---------- */
+var STAGES=[
+ {n:"Conexões celulares",ic:"🧬",type:"match",time:90000,pen:3000,base:100,unit:"conexões",lab:"Conexões",
+  desc:"Conecte cada organela à sua função.",
+  rules:["Toque em uma <b>organela</b> e depois na <b>função</b> correspondente."]},
+ {n:"Identidade celular",ic:"🔬",type:"quiz",time:75000,pen:4000,base:150,unit:"perguntas",lab:"Perguntas",
+  desc:"Células animais, vegetais ou ambas? Descubra onde cada estrutura existe.",
+  rules:["Escolha <b>Animais</b>, <b>Vegetais</b> ou <b>Ambas</b> para cada estrutura.","Após um erro você pode tentar de novo, mas perde tempo."]},
+ {n:"Desafio da célula",ic:"🧫",type:"quiz",time:120000,pen:5000,base:200,unit:"perguntas",lab:"Perguntas",
+  desc:"Interprete situações reais e identifique a organela responsável.",
+  rules:["Leia a situação e escolha a <b>organela responsável</b>.","As perguntas ficam mais difíceis ao longo da etapa."]}
+];
+var DATA=[
+ {id:0,n:"Núcleo",i:"🧬",f:"Armazena o DNA e participa do controle das atividades celulares."},
+ {id:1,n:"Mitocôndria",i:"⚡",f:"Produz a maior parte do ATP utilizado pela célula para fornecer energia."},
+ {id:2,n:"Ribossomos",i:"🔹",f:"Realizam a síntese de proteínas."},
+ {id:3,n:"Lisossomos",i:"🧪",f:"Realizam a digestão intracelular."},
+ {id:4,n:"Complexo de Golgi",i:"📦",f:"Modifica, organiza e empacota substâncias para transporte."},
+ {id:5,n:"Retículo endoplasmático",i:"🕸️",f:"Participa da síntese e do processamento de substâncias; o rugoso atua na produção e no processamento de proteínas, e o liso na síntese de lipídios."},
+ {id:6,n:"Membrana plasmática",i:"🛡️",f:"Controla a entrada e a saída de substâncias da célula."},
+ {id:7,n:"Cloroplastos",i:"🌿",f:"Realizam a fotossíntese em células vegetais e algas."}
+];
+var OPT2=["🐾 Animais","🌱 Vegetais","🔁 Ambas"];
+var Q2=[
+ {i:"🧱",s:"Parede celular de celulose",a:1,e:"A parede celular de celulose é típica das células vegetais; células animais não a possuem."},
+ {i:"🛡️",s:"Membrana plasmática",a:2,e:"Todas as células, animais e vegetais, são delimitadas por membrana plasmática."},
+ {i:"🌿",s:"Cloroplastos",a:1,e:"A fotossíntese ocorre nos cloroplastos, presentes em células vegetais (e algas), não nas animais."},
+ {i:"🧬",s:"Núcleo",a:2,e:"Animais e vegetais são eucariontes: ambos têm células com núcleo."},
+ {i:"⚡",s:"Mitocôndrias",a:2,e:"Vegetais também respiram! Suas células têm mitocôndrias além dos cloroplastos."},
+ {i:"💧",s:"Vacúolo central grande",a:1,e:"O grande vacúolo central, que ajuda a manter a turgência, é característico de células vegetais."},
+ {i:"✳️",s:"Centríolos",a:0,e:"Os centríolos participam da divisão celular em células animais; plantas com flores não os possuem."},
+ {i:"🍬",s:"Glicocálix (revestimento de carboidratos externo à membrana)",a:0,e:"É típico de células animais; as células vegetais têm parede celular como revestimento externo."}
+];
+var Q3=[
+ {i:"🏃",s:"Após meses de treino de resistência, as células musculares de um maratonista aumentam o número de uma organela, pois precisam gerar ATP de forma contínua. Qual organela é essa?",a:"Mitocôndrias",o:["Lisossomos","Ribossomos","Complexo de Golgi"],e:"As mitocôndrias fazem a respiração celular e produzem a maior parte do ATP."},
+ {i:"🦠",s:"Um glóbulo branco captura uma bactéria. Logo depois, ela é destruída por enzimas dentro da célula, sem danificar o restante do citoplasma. Que organela fornece essas enzimas?",a:"Lisossomos",o:["Mitocôndrias","Núcleo","Cloroplastos"],e:"Os lisossomos contêm enzimas digestivas e realizam a digestão intracelular."},
+ {i:"🌑",s:"Uma planta aquática é mantida no escuro e deixa de converter gás carbônico e água em glicose. Qual organela deixou de realizar sua função principal?",a:"Cloroplastos",o:["Mitocôndrias","Lisossomos","Retículo endoplasmático liso"],e:"Os cloroplastos dependem de luz para realizar a fotossíntese."},
+ {i:"💉",s:"Uma célula do pâncreas produz insulina e precisa liberá-la para fora. Depois de sintetizada, a proteína é modificada, organizada e empacotada em vesículas para secreção. Que organela realiza essa etapa final?",a:"Complexo de Golgi",o:["Lisossomos","Ribossomos","Mitocôndrias"],e:"O Complexo de Golgi modifica e empacota substâncias para o transporte."},
+ {i:"💊",s:"Um antibiótico bloqueia as estruturas que leem o RNA mensageiro para montar cadeias de aminoácidos, impedindo a produção de proteínas na bactéria. Qual organela é o alvo?",a:"Ribossomos",o:["Núcleo","Complexo de Golgi","Lisossomos"],e:"Os ribossomos traduzem o RNA mensageiro e realizam a síntese de proteínas."},
+ {i:"🍬",s:"Mesmo com muita glicose no sangue, uma célula só a absorve se as proteínas transportadoras de sua superfície estiverem funcionando. Que estrutura contém essas proteínas e regula o que entra e sai?",a:"Membrana plasmática",o:["Núcleo","Mitocôndrias","Cloroplastos"],e:"A membrana plasmática controla a entrada e a saída de substâncias."},
+ {i:"🧪",s:"Células das glândulas que produzem hormônios esteroides, derivados do colesterol, são muito ricas em uma rede de membranas especializada em sintetizar esses lipídios. Que organela é essa?",a:"Retículo endoplasmático liso",o:["Retículo endoplasmático rugoso","Complexo de Golgi","Lisossomos"],e:"O retículo endoplasmático liso atua na síntese de lipídios, como os esteroides."},
+ {i:"🧫",s:"Em uma célula que secreta enzimas digestivas, a proteína é sintetizada por ribossomos aderidos a uma organela membranosa, onde é dobrada e recebe as primeiras modificações antes de seguir ao Golgi. Qual é essa organela?",a:"Retículo endoplasmático rugoso",o:["Retículo endoplasmático liso","Lisossomos","Mitocôndrias"],e:"O retículo rugoso, com ribossomos aderidos, produz e processa proteínas."}
+];
+var QS=[null,Q2,Q3];
+var RANKS=[
+ {n:"Diamante",min:5400,c:"#7dd3fc",ic:"💎"},
+ {n:"Ouro",min:4200,c:"#ffd166",ic:"🥇"},
+ {n:"Prata",min:3000,c:"#d6dbea",ic:"🥈"},
+ {n:"Bronze",min:0,c:"#e0955a",ic:"🥉"}
+];
+var COLORS=["#b8f542","#35e8e0","#ffd166","#ff8fab","#a78bfa","#7dd3fc","#fb923c","#86efac"];
+
+/* ---------- estado ---------- */
+var $=function(id){return document.getElementById(id)};
+var run=null,g=null,S=null,timer=null,last=0,lockT=null;
+
+/* ---------- utilidades ---------- */
+function getRec(){try{return parseInt(localStorage.getItem(KEY),10)||0}catch(e){return 0}}
+function setRec(v){try{localStorage.setItem(KEY,String(v))}catch(e){}}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function fmt(ms){var s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function tf(ms){var s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function fm(x){return String(Math.round(x*100)/100).replace(".",",")}
+function mult(n){return Math.min(1+(Math.max(n,1)-1)*0.25,2.5)}
+function rankOf(v){for(var i=0;i<RANKS.length;i++){if(v>=RANKS[i].min)return RANKS[i]}return RANKS[RANKS.length-1]}
+function show(id){["menu","intro","game","stage","result"].forEach(function(s){$(s).classList.toggle("on",s===id)})}
+function pips(el,cur){var h="";for(var i=0;i<3;i++){h+='<i class="'+(i<cur?"ok":(i===cur?"on":""))+'"></i>'}el.innerHTML=h}
+function showRec(){
+  var r=getRec();$("recMenu").textContent=r;
+  $("recRank").textContent=r>0?" · "+rankOf(r).ic+" "+rankOf(r).n:"";
+}
+function later(fn,ms){
+  clearTimeout(lockT);
+  var gg=g;
+  lockT=setTimeout(function(){
+    if(g!==gg||!gg||gg.dead)return;
+    if(gg.paused){gg.pending=fn}else fn();
+  },ms);
+}
+
+/* ---------- fluxo geral ---------- */
+function startRun(){
+  run={stage:0,base:0,res:[],maxCombo:0};
+  if(g){g.dead=true}
+  showIntro();
+}
+function showIntro(){
+  var s=STAGES[run.stage];
+  $("iIcon").textContent=s.ic;
+  $("iNum").textContent="Etapa "+(run.stage+1)+"/3";
+  $("iTitle").textContent=s.n;
+  $("iDesc").textContent=s.desc;
+  var r=s.rules.slice();
+  r.push("<b>"+(s.time/1000)+" segundos</b> para concluir as <b>8 "+s.unit+"</b>.");
+  r.push("Cada acerto vale <b>"+s.base+" pontos</b>; acertos seguidos formam um combo de até <b>x2,5</b>.");
+  r.push("Cada erro custa <b>"+(s.pen/1000)+" segundos</b> e quebra o combo.");
+  $("iRules").innerHTML=r.map(function(t){return "<li>"+t+"</li>"}).join("");
+  pips($("iPips"),run.stage);
+  show("intro");
+}
+function stopTimers(){clearInterval(timer);clearTimeout(lockT)}
+
+function startStage(){
+  if(!run)return;
+  stopTimers();
+  if(g)g.dead=true;
+  S=STAGES[run.stage];
+  g={rem:S.time,paused:false,running:true,freeze:false,score:0,streak:0,maxC:0,hits:0,errs:0,done:{},missed:{},selO:null,selF:null,lock:false,n:0,qi:0,dead:false,pending:null};
+  $("ov").classList.remove("on");
+  $("pgL").textContent=S.lab;
+  $("pen").textContent="-"+(S.pen/1000)+"s";
+  $("stTxt").textContent="Etapa "+(run.stage+1)+"/3";
+  pips($("gPips"),run.stage);
+  if(S.type==="match"){
+    $("quiz").style.display="none";$("board").style.display="";buildMatch();
+  }else{
+    $("board").style.display="none";$("quiz").style.display="flex";renderQ();
+  }
+  show("game");hud();comboUI(false);
+  last=performance.now();timer=setInterval(tick,100);
+}
+
+function tick(){
+  if(!g||!g.running||g.paused)return;
+  var now=performance.now(),d=now-last;last=now;
+  if(!g.freeze)g.rem-=d;
+  if(g.rem<=0){g.rem=0;hud();finish(false);return}
+  hud();
+}
+function hud(){
+  $("tm").textContent=fmt(g.rem);
+  $("tbar").style.width=(g.rem/S.time*100)+"%";
+  $("tmBox").classList.toggle("low",g.rem<=10000);
+  $("sc").textContent=run.base+g.score;
+  $("pg").textContent=g.hits+" de "+TOTAL;
+}
+function comboUI(bump){
+  var n=g.streak,c=$("combo"),sg=$("seg").children;
+  $("cN").textContent="🔥 Combo "+n;
+  $("cX").textContent="x"+fm(mult(n));
+  for(var i=0;i<sg.length;i++)sg[i].className=i<n?"f":"";
+  c.classList.toggle("hot",n>=3);
+  if(bump){c.classList.remove("bump");void c.offsetWidth;c.classList.add("bump")}
+}
+
+/* acerto / erro (comum às etapas) */
+function reward(){
+  g.streak++;if(g.streak>g.maxC)g.maxC=g.streak;
+  if(g.streak>run.maxCombo)run.maxCombo=g.streak;
+  var p=Math.round(S.base*mult(g.streak));
+  g.score+=p;g.hits++;return p;
+}
+function penalize(key){
+  g.streak=0;g.errs++;g.missed[key]=true;g.rem-=S.pen;
+  var p=$("pen");p.classList.remove("go");void p.offsetWidth;p.classList.add("go");
+  comboUI(false);
+  if(g.rem<=0){g.rem=0;hud();finish(false);return true}
+  hud();return false;
+}
+function fly(txt,r){
+  var s=document.createElement("div");s.className="fly";s.textContent=txt;
+  s.style.left=(r.left+r.width/2-24)+"px";s.style.top=(r.top+r.height/2-14)+"px";
+  document.body.appendChild(s);setTimeout(function(){s.remove()},950);
+}
+
+/* ---------- etapa 1: conexões ---------- */
+function buildMatch(){
+  var cO=$("colO"),cF=$("colF");cO.innerHTML="";cF.innerHTML="";
+  DATA.forEach(function(d){cO.appendChild(card("org",d,'<span class="ic" aria-hidden="true">'+d.i+'</span><span>'+d.n+'</span>'))});
+  shuffle(DATA).forEach(function(d){cF.appendChild(card("fn",d,"<span>"+d.f+"</span>"))});
+}
+function card(type,d,html){
+  var b=document.createElement("button");
+  b.type="button";b.className="card "+type;b.dataset.type=type;b.dataset.id=d.id;
+  b.innerHTML=html+'<span class="tag"></span>';
+  b.addEventListener("click",function(){pick(type,d.id,b)});
+  return b;
+}
+function pick(type,id,el){
+  if(!g||!g.running||g.paused||g.lock||S.type!=="match")return;
+  if(el.classList.contains("done"))return;
+  var k=type==="org"?"selO":"selF";
+  var same=document.querySelectorAll('.card.sel[data-type="'+type+'"]');
+  for(var i=0;i<same.length;i++)same[i].classList.remove("sel");
+  if(g[k]===id){g[k]=null;return}
+  g[k]=id;el.classList.add("sel");
+  if(g.selO!==null&&g.selF!==null)judge();
+}
+function cards(id){return document.querySelectorAll('.card[data-id="'+id+'"]')}
+function judge(){
+  var o=g.selO,f=g.selF;
+  if(o===f){
+    g.n++;var pts=reward();g.done[o]=true;
+    var c=COLORS[(g.n-1)%COLORS.length];
+    cards(o).forEach(function(e){
+      e.classList.remove("sel");e.classList.add("done");e.style.setProperty("--pc",c);
+      e.querySelector(".tag").textContent=g.n;e.disabled=true;
+    });
+    fly("+"+pts,document.querySelector('.card.fn[data-id="'+o+'"]').getBoundingClientRect());
+    g.selO=g.selF=null;hud();comboUI(true);
+    if(g.hits>=TOTAL)finish(true);
+  }else{
+    g.lock=true;
+    var a=document.querySelector('.card.org[data-id="'+o+'"]'),b=document.querySelector('.card.fn[data-id="'+f+'"]');
+    a.classList.add("bad");b.classList.add("bad");
+    if(penalize("m"+o))return;
+    later(function(){
+      a.classList.remove("bad","sel");b.classList.remove("bad","sel");
+      g.selO=g.selF=null;g.lock=false;
+    },450);
+  }
+}
+
+/* ---------- etapas 2 e 3: perguntas ---------- */
+function renderQ(){
+  var q=QS[run.stage][g.qi],st=run.stage,h="";
+  h+='<div class="qcard"><div class="qn">Pergunta '+(g.qi+1)+' de '+TOTAL+'</div>';
+  if(st===1)h+='<div class="qlab">Em quais células esta estrutura é encontrada?</div><div class="qbig"><span aria-hidden="true">'+q.i+'</span> '+q.s+'</div>';
+  else h+='<div class="qtxt"><span aria-hidden="true">'+q.i+'</span> '+q.s+'</div>';
+  h+='<div class="fb" id="fb" aria-live="polite"></div></div>';
+  h+='<div class="opts '+(st===1?"three":"four")+'" id="opts"></div>';
+  $("quiz").innerHTML=h;$("quiz").scrollTop=0;
+  var list=st===1?OPT2.map(function(t,i){return {t:t,ok:i===q.a}}):shuffle([q.a].concat(q.o)).map(function(t){return {t:t,ok:t===q.a}});
+  var box=$("opts");
+  list.forEach(function(o){
+    var b=document.createElement("button");
+    b.type="button";b.className="card opt";b.textContent=o.t;
+    b.addEventListener("click",function(){answer(b,o.ok,q)});
+    box.appendChild(b);
+  });
+}
+function answer(btn,ok,q){
+  if(!g||!g.running||g.paused||g.lock||S.type!=="quiz")return;
+  if(btn.classList.contains("off")||btn.classList.contains("done"))return;
+  if(ok){
+    g.lock=true;g.freeze=true;
+    var pts=reward();
+    var all=document.querySelectorAll("#opts .opt");
+    for(var i=0;i<all.length;i++){if(all[i]!==btn)all[i].classList.add("off")}
+    btn.classList.add("done");btn.style.setProperty("--pc","#b8f542");
+    fly("+"+pts,btn.getBoundingClientRect());
+    $("fb").textContent="✔ "+q.e;
+    hud();comboUI(true);
+    later(function(){
+      g.freeze=false;g.lock=false;last=performance.now();
+      if(g.hits>=TOTAL)finish(true);else{g.qi++;renderQ()}
+    },1600);
+  }else{
+    btn.classList.add("bad","off");
+    penalize("q"+g.qi);
+  }
+}
+
+/* ---------- pausa / reinício ---------- */
+function pause(){
+  if(!g||!g.running||g.paused)return;
+  g.paused=true;clearInterval(timer);$("ov").classList.add("on");
+}
+function resume(){
+  if(!g||!g.running||!g.paused)return;
+  g.paused=false;$("ov").classList.remove("on");
+  last=performance.now();clearInterval(timer);timer=setInterval(tick,100);
+  if(g.pending){var f=g.pending;g.pending=null;f()}
+}
+function toMenu(){
+  stopTimers();
+  if(g){g.running=false;g.dead=true}
+  $("ov").classList.remove("on");showRec();show("menu");
+}
+
+/* ---------- fim de etapa ---------- */
+function finish(win){
+  if(!g||!g.running)return;
+  var gg=g;g.running=false;stopTimers();g.pending=null;
+  if(win){
+    var miss=Object.keys(g.missed).length;
+    run.res[run.stage]={score:g.score,clean:TOTAL-miss,errs:g.errs,time:g.rem,maxC:g.maxC};
+    run.base+=g.score;
+  }
+  setTimeout(function(){if(g===gg&&!gg.dead)showStage(win)},win?700:350);
+}
+function showStage(win){
+  var r=run.res[run.stage],last3=run.stage===2;
+  $("sNum").textContent="Etapa "+(run.stage+1)+"/3 · "+S.n;
+  $("bNext").style.display=win?"":"none";
+  $("bRetry").style.display=win?"none":"";
+  if(win){
+    $("sIcon").textContent="✅";
+    $("sTitle").textContent="Etapa "+(run.stage+1)+" concluída!";
+    $("sMsg").textContent=r.errs===0?"Perfeito! Nenhum erro nesta etapa.":"Concluída com "+r.errs+(r.errs===1?" erro":" erros")+". Siga em frente!";
+    $("sL1").textContent="Pontos da etapa";$("sScore").textContent=r.score;
+    $("sL2").textContent="Acertos de primeira";$("sClean").textContent=r.clean+" de "+TOTAL;
+    $("sTime").textContent=tf(r.time);$("sCombo").textContent=r.maxC;
+    $("bNext").textContent=last3?"VER RESULTADO FINAL":"CONTINUAR";
+  }else{
+    $("sIcon").textContent="⏰";
+    $("sTitle").textContent="Fim de tempo!";
+    $("sMsg").textContent="O tempo acabou. Os pontos desta tentativa não entram no total. Tente novamente!";
+    $("sL1").textContent="Pontos da tentativa";$("sScore").textContent=g.score;
+    $("sL2").textContent=S.lab+" concluídas";$("sClean").textContent=g.hits+" de "+TOTAL;
+    $("sTime").textContent="0:00";$("sCombo").textContent=g.maxC;
+  }
+  $("sTotal").textContent=run.base;
+  show("stage");
+}
+function nextStage(){
+  if(run.stage<2){run.stage++;showIntro()}else showFinal();
+}
+
+/* ---------- resultado final ---------- */
+function showFinal(){
+  var total=run.base,clean=0,h="";
+  run.res.forEach(function(r,i){
+    clean+=r.clean;
+    h+='<div class="ln"><b>'+(i+1)+'</b><span>'+STAGES[i].n+'</span><em>'+r.score+' pts</em><small>'+r.clean+'/'+TOTAL+' de primeira · '+r.errs+(r.errs===1?' erro':' erros')+' · sobraram '+tf(r.time)+' · combo '+r.maxC+'</small></div>';
+  });
+  var rk=rankOf(total),prev=getRec(),isNew=total>prev;
+  if(isNew)setRec(total);
+  $("rRank").style.setProperty("--rc",rk.c);
+  $("rRank").textContent=rk.ic+" "+rk.n.toUpperCase();
+  $("rScore").textContent=total;
+  $("rHits").textContent=clean+" de "+(TOTAL*3);
+  $("rCombo").textContent=run.maxCombo+" seguidos";
+  $("rStages").innerHTML=h;
+  $("rRec").textContent=Math.max(prev,total)+" pts";
+  $("newRec").textContent=isNew?"Novo recorde pessoal!":"";
+  show("result");
+}
+
+/* ---------- eventos ---------- */
+$("bPlay").onclick=startRun;
+$("bAgain").onclick=startRun;
+$("bStart").onclick=startStage;
+$("bIntroMenu").onclick=toMenu;
+$("bNext").onclick=nextStage;
+$("bRetry").onclick=startStage;
+$("bSMenu").onclick=toMenu;
+$("bMenu").onclick=toMenu;
+$("bPause").onclick=pause;
+$("bResume").onclick=resume;
+$("bRestart").onclick=startStage;
+$("bRestart2").onclick=startStage;
+$("bMenu2").onclick=toMenu;
+document.addEventListener("visibilitychange",function(){if(document.hidden)pause()});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&g&&g.running){g.paused?resume():pause()}
+});
+showRec();
+})();
+</script>
+</body>
+</html>
